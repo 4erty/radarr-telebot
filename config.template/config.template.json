@@ -1,0 +1,19 @@
+{
+  "telegram": {
+    "botToken": "",
+    "chatId": 0
+  },
+  "config": {
+    "watchInterval": 60000
+  },
+  "qBitTorrent": {
+    "host": "",
+    "port": 0
+  },
+  "radarr": {
+    "host": "",
+    "apiKey": "",
+    "port": 0,
+    "qualityProfileId": 0
+  }
+}

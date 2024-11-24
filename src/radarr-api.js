@@ -6,7 +6,7 @@ const importProps = {
     'searchForMovie': true
   },
   monitored: true,
-  qualityProfileId: 3,
+  qualityProfileId: radarr.qualityProfileId,
   minimumAvailability: 'released',
   rootFolderPath: '/media/Video',
 }
