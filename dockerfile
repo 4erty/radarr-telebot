@@ -13,6 +13,4 @@ RUN ln -s /app/config /config
 
 RUN apk del git
 
-VOLUME /config
-
-CMD ["node", "radarr.js"]
+CMD ["node", "radar.js"]
