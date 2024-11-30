@@ -6,7 +6,7 @@ async function torrentsGetInfo(lastCheck) {
     const data = await res.json()
     return findCompleted(data, lastCheck)
   } catch(err) {
-    console.log(err)
+    console.log('torrentsGetInfo', err)
     return []
   }
 }

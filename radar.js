@@ -31,7 +31,12 @@ function init() {
     if (verify(ctx)) {
       const name = ctx.update.message.text.replace('/search', '').trim()
       console.log('lookup for - ', name)
-      list = await lookUpByName(name)
+      try {
+        list = await lookUpByName(name)
+      } catch (err) {
+        console.log(err)
+        return ctx.reply('Error searching for movie')
+      }
       
       return ctx.reply('Search result', {
         parse_mode: 'MarkdownV2',
@@ -92,15 +97,19 @@ function destroy () {
 function torrentsWatcher () {
   let lastCheck = Date.now()
   watchIntervalId = setInterval(async () => {
-    const completed = await torrentsGetInfo(lastCheck)
-    lastCheck = Date.now()
-    if (completed.length) {
-      console.log('Completed torrents', completed)
-      
-      completed.forEach(torrent => {
-        const message = `Torrent ${torrent.name} completed`;
-        bot.telegram.sendMessage(telegram.chatId, message);
-      });
+    try {
+      const completed = await torrentsGetInfo(lastCheck)
+      lastCheck = Date.now()
+      if (completed.length) {
+        console.log('Completed torrents', completed)
+        
+        completed.forEach(torrent => {
+          const message = `Torrent ${torrent.name} completed`;
+          bot.telegram.sendMessage(telegram.chatId, message);
+        });
+      }
+    } catch(err) {
+      console.log('watchInterval', err)
     }
   }, config.watchInterval)
 }
