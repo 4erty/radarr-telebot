@@ -27,29 +27,59 @@ function init() {
 
   bot.help((ctx) => ctx.reply('Help isn\'t ready yet :('))
 
-  bot.command('search',async ctx => {
+  bot.command('test', async ctx => {
+    if (verify(ctx)) {
+      const name = ctx.update.message.text.replace('/test', '').trim()
+      const keyboard = Markup.inlineKeyboard([
+        Markup.button.callback("Plain", "plain"),
+        Markup.button.callback("Italic", "italic"),
+      ])
+
+      const message = await ctx.reply('Test message')
+
+      console.log('test', message)
+      const result = await ctx.editMessageText('Test message edited', {
+        chat_id: message.chat.id,
+        message_id: message.message_id,
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'MarkdownV2'
+      })
+      console.log('test', result, name)
+    }
+  })
+
+  bot.command('search', async ctx => {
     if (verify(ctx)) {
       const name = ctx.update.message.text.replace('/search', '').trim()
+      const message = await ctx.reply('looking for movie...')
       console.log('lookup for - ', name)
+
       try {
         list = await lookUpByName(name)
       } catch (err) {
         console.log(err)
-        return ctx.reply('Error searching for movie')
+        return ctx.editMessageText('Error searching for movie', {
+          chat_id: message.chat.id,
+          message_id: message.message_id,
+        })
       }
       
-      return ctx.reply('Search result', {
-        parse_mode: 'MarkdownV2',
-        ...Markup.inlineKeyboard([
-          ...list.map(movie => {
-            return [
-              Markup.button.callback(
-                `${movie.title} ${movie.year} ${movie.ratings?.imdb?.value}`,
-                `select:${movie.tmdbId}`,
-              )
-            ]
-          })
-        ]).resize()
+      const keyboard = Markup.inlineKeyboard([
+        ...list.map(movie => {
+          return [
+            Markup.button.callback(
+              `${movie.title} ${movie.year} ${movie.ratings?.imdb?.value}`,
+              `select:${movie.tmdbId}`,
+            )
+          ]
+        })
+      ]).resize()
+
+      return ctx.editMessageText('Search result: ', {
+        chat_id: message.chat.id,
+        message_id: message.message_id,
+        reply_markup: keyboard.reply_markup,
+        parse_mode: 'MarkdownV2'
       })
     }
   })
@@ -74,11 +104,18 @@ function init() {
       case 'add':
         console.log('add', movie.title)
         try {
+          const message = await ctx.reply('Trying to add movie...')
           await importMovie(movie)
-          ctx.reply('Movie added')
+          ctx.editMessageText('Movie added', {
+            chat_id: message.chat.id,
+            message_id: message.message_id,
+          })
         } catch (err) {
           console.log(err)
-          ctx.reply('Error adding movie')
+          ctx.editMessageText('Error adding movie', {
+            chat_id: message.chat.id,
+            message_id: message.message_id,
+          })
         }
     }
   })
